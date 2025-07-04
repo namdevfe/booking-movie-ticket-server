@@ -1,0 +1,6 @@
+# Common
+dist
+node_modules
+
+# Environtments
+.env
