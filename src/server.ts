@@ -1,4 +1,4 @@
-import express from "express"
+import express from 'express'
 
 const START_SERVER = () => {
   const app = express()
@@ -6,6 +6,7 @@ const START_SERVER = () => {
   const APP_PORT = 8017
 
   app.listen(APP_PORT, APP_HOST, () => {
+    // eslint-disable-next-line no-console
     console.log(`Server is running on http://${APP_HOST}:${APP_PORT}`)
   })
 }
