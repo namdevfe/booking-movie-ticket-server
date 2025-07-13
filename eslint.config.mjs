@@ -27,7 +27,8 @@ export default defineConfig([
     'keyword-spacing': 1,
     'comma-dangle': 1,
     'comma-spacing': 1,
-    'arrow-spacing': 1
+    'arrow-spacing': 1,
+    '@typescript-eslint/no-explicit-any': '0'
   } },
   tseslint.configs.recommended,
   { files: ['**/*.json'], plugins: { json }, language: 'json/json', extends: ['json/recommended'] },
