@@ -3,10 +3,10 @@ import { model, Schema } from 'mongoose'
 const userSchema = new Schema({
   email: { type: String, required: true, unique: true },
   username: { type: String, required: true },
-  password: { type: String },
   fullName: { type: String, required: true },
+  phoneNumber: { type: String, unique: true },
   dateOfBirth: { type: Date },
-  phoneNumber: { type: String },
+  password: { type: String },
   role: { type: String }
 })
 
