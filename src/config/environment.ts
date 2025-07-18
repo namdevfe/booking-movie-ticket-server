@@ -3,5 +3,9 @@ import 'dotenv/config'
 export const ENV = {
   APP_HOST: process.env.APP_HOST as string,
   APP_PORT: Number(process.env.APP_PORT),
-  MONGODB_URI: process.env.MONGODB_URI
+  MONGODB_URI: process.env.MONGODB_URI,
+  GOOGLE_OAUTH2_CLIENT_ID: process.env.GOOGLE_OAUTH2_CLIENT_ID,
+  GOOGLE_OAUTH2_CLIENT_SECRET: process.env.GOOGLE_OAUTH2_CLIENT_SECRET,
+  GOOGLE_OAUTH2_REFRESH_TOKEN: process.env.GOOGLE_OAUTH2_REFRESH_TOKEN,
+  ADMIN_EMAIL_ADDRESS: process.env.ADMIN_EMAIL_ADDRESS
 }
