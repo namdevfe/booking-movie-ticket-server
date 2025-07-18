@@ -1,5 +1,6 @@
 export const MESSAGE = {
-  INVALID_VIETNAMESE_PHONE_NUMBER: 'Invalid Vietnameses Phone Number'
+  INVALID_VIETNAMESE_PHONE_NUMBER: 'Invalid Vietnameses Phone Number',
+  OBJECT_ID_RULE_MESSAGE: 'Your string fails to match the Object Id pattern!'
 }
 
 export const TEMPLATE_MESSAGE_VALIDATIONS: Record<string, string> = {
