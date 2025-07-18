@@ -9,6 +9,8 @@ export interface User {
   dateOfBirth?: NativeDate | Date | string | null,
   phoneNumber?: string | null,
   role?: string | null
+  isActive?: boolean
 }
 
-export type CreateUserPayload = Omit<User, 'role'>
+export type CreateUserPayload = Omit<User, '_id' | 'role'>
+export type UpdateUserPayload = Omit<User, '_id' | 'role'> 
