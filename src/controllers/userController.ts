@@ -1,12 +1,12 @@
-import { Request, Response } from "express"
+import { NextFunction, Request, Response } from "express"
 import userService from "~/services/userService"
 
-const createUser = async (req: Request, res: Response) => {
+const createUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const response = await userService.createUser(req.body)
-    res.status(201).json(response)
+    res.status(response.statusCode).json(response)
   } catch (error) {
-    console.log('🚀error---->', error);
+    next(error)
   }
 }
 

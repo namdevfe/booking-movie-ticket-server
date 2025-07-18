@@ -2,6 +2,7 @@ import express from 'express'
 import { ENV } from '~/config/environment'
 import connectDB from '~/config/database'
 import { APIs_V1 } from '~/routes/v1'
+import { errorHandlingMiddleware } from '~/middlewares/errorHandlingMiddleware'
 
 const START_SERVER = async () => {
   const app = express()
@@ -11,6 +12,8 @@ const START_SERVER = async () => {
   await connectDB()
 
   app.use('/api/v1', APIs_V1)
+
+  app.use(errorHandlingMiddleware)
 
   app.listen(ENV.APP_PORT, ENV.APP_HOST, async () => {
     // eslint-disable-next-line no-console

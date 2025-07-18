@@ -3,6 +3,8 @@ import { NextFunction, Request, Response } from 'express'
 import { MESSAGE } from '~/constants/message'
 import { REGEX } from '~/constants/validator'
 import { CreateUserPayload } from '~/types/userType'
+import ApiError from '~/utils/ApiError'
+import { StatusCodes } from 'http-status-codes'
 
 const createUser = async (req: Request, res: Response, next: NextFunction) => {
   const createUserSchema = Joi.object<CreateUserPayload>({
@@ -56,16 +58,8 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     await createUserSchema.validateAsync(req.body, { abortEarly: false })
     next()
-  } catch (error: any) {
-    if (error instanceof Joi.ValidationError) {
-      const errors = error.details.map((item) => ({ field: item.path[0], message: item.message }))
-      
-      res.status(422).json({
-        statusCode: 422,
-        message: 'Validation Error',
-        errors: errors
-      })
-    }
+  } catch (error) {
+    next(error)
   }
 }
 
