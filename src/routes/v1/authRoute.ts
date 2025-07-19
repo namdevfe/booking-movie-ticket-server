@@ -12,4 +12,7 @@ Router.route('/register')
 Router.route('/login')
   .post(authValidation.login, authController.login)
 
+Router.route('/profile')
+  .get(authController.getProfile)
+
 export const authRoutes = Router

@@ -1,12 +1,11 @@
-import { StatusCodes } from "http-status-codes";
-import User from "~/models/userModel";
-import { ApiResponse } from "~/types/api";
-import { LoginPayload, LoginResponse } from "~/types/authType";
-import ApiError from "~/utils/ApiError";
 import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
-import { ENV } from "~/config/environment";
-import { generateAccessToken, generateRefreshToken } from "~/utils/jwt";
+import { StatusCodes } from 'http-status-codes'
+import User from '~/models/userModel'
+import { ApiResponse } from '~/types/api'
+import { LoginPayload, LoginResponse } from '~/types/authType'
+import { GetProfileResponse } from '~/types/userType'
+import ApiError from '~/utils/ApiError'
+import { generateAccessToken, generateRefreshToken } from '~/utils/jwt'
 
 const login = async (payload: LoginPayload): Promise<ApiResponse<LoginResponse>> => {
   try {
@@ -26,7 +25,7 @@ const login = async (payload: LoginPayload): Promise<ApiResponse<LoginResponse>>
 
     // Check password
     const isCorrectPassword = await bcrypt.compare(password as string, existingUser.password as string)
-    if (!isCorrectPassword) {
+    if (!isCorrectPassword) { 
       throw new ApiError(StatusCodes.UNAUTHORIZED, 'Password incorrect')
     }
 
@@ -49,8 +48,27 @@ const login = async (payload: LoginPayload): Promise<ApiResponse<LoginResponse>>
   }
 }
 
+const getProfile = async (userId: string): Promise<ApiResponse<GetProfileResponse>> => {
+  try {
+    const profile = await User.findById(userId).select('-password -refreshToken')
+    
+    if (!profile) {
+      throw new ApiError(StatusCodes.NOT_FOUND, 'Profile not found')
+    }
+
+    return {
+      statusCode: StatusCodes.OK,
+      message: 'Get profile is successfully',
+      data: profile
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
 const authService = {
-  login
+  login,
+  getProfile
 }
 
 export default authService
