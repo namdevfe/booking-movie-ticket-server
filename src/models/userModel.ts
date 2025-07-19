@@ -9,7 +9,8 @@ const userSchema = new Schema({
   dateOfBirth: { type: Date },
   password: { type: String },
   isActive: { type: Boolean, default: false },
-  role: { type: String }
+  role: { type: String },
+  refreshToken: { type: String, default: null }
 })
 
 userSchema.pre('save', async function(next) {
