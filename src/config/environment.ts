@@ -1,4 +1,5 @@
 import 'dotenv/config'
+import type { StringValue } from 'ms'
 
 export const ENV = {
   APP_HOST: process.env.APP_HOST as string,
@@ -7,5 +8,9 @@ export const ENV = {
   GOOGLE_OAUTH2_CLIENT_ID: process.env.GOOGLE_OAUTH2_CLIENT_ID,
   GOOGLE_OAUTH2_CLIENT_SECRET: process.env.GOOGLE_OAUTH2_CLIENT_SECRET,
   GOOGLE_OAUTH2_REFRESH_TOKEN: process.env.GOOGLE_OAUTH2_REFRESH_TOKEN,
-  ADMIN_EMAIL_ADDRESS: process.env.ADMIN_EMAIL_ADDRESS
+  ADMIN_EMAIL_ADDRESS: process.env.ADMIN_EMAIL_ADDRESS,
+  JWT_ACCESS_TOKEN_SECRET: process.env.JWT_ACCESS_TOKEN_SECRET as string,
+  JWT_ACCESS_TOKEN_EXPIRES_IN: process.env.JWT_ACCESS_TOKEN_EXPIRES_IN as StringValue,
+  JWT_REFRESH_TOKEN_SECRET: process.env.JWT_REFRESH_TOKEN_SECRET as string,
+  JWT_REFRESH_TOKEN_EXPIRES_IN: process.env.JWT_REFRESH_TOKEN_EXPIRES_IN as StringValue
 }
