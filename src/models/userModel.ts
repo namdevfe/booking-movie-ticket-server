@@ -14,11 +14,11 @@ const userSchema = new Schema({
 })
 
 userSchema.pre('save', async function(next) {
-  if (!this.password) return
+  if (!this.isModified('password')) return next()
 
   // Hash passowrd
-  const salt = bcrypt.genSaltSync(10)
-  this.password =  await bcrypt.hash(this.password, salt)
+  const salt = await bcrypt.genSalt(10)
+  this.password =  await bcrypt.hash(this.password as string, salt)
 
   next()
 })

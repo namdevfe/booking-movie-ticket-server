@@ -3,6 +3,7 @@ import { ENV } from '~/config/environment'
 import connectDB from '~/config/database'
 import { APIs_V1 } from '~/routes/v1'
 import { errorHandlingMiddleware } from '~/middlewares/errorHandlingMiddleware'
+import authenticateMiddleware from '~/middlewares/authenticateMiddleware'
 
 const START_SERVER = async () => {
   const app = express()
