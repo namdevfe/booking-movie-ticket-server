@@ -20,6 +20,15 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
   }
 }
 
+const verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const response = await authService.verifyEmail(req.body)
+    res.status(response.statusCode).json(response)
+  } catch (error) {
+    next(error)
+  }
+}
+
 const getProfile = async (req: AuthRequest, res: Response, next: NextFunction) => {
   const userId = req.user?.userId
   try {
@@ -33,6 +42,7 @@ const getProfile = async (req: AuthRequest, res: Response, next: NextFunction) =
 const authController = {
   register,
   login,
+  verifyEmail,
   getProfile
 }
 

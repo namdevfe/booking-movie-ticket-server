@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt'
 import { StatusCodes } from 'http-status-codes'
 import User from '~/models/userModel'
 import { ApiResponse } from '~/types/api'
-import { LoginPayload, LoginResponse } from '~/types/authType'
+import { LoginPayload, LoginResponse, VerifyEmailPayload } from '~/types/authType'
 import { CreateUserPayload, GetProfileResponse } from '~/types/userType'
 import ApiError from '~/utils/ApiError'
 import { generateAccessToken, generateRefreshToken } from '~/utils/jwt'
@@ -107,6 +107,46 @@ const login = async (payload: LoginPayload): Promise<ApiResponse<LoginResponse>>
   }
 }
 
+const verifyEmail = async (payload: VerifyEmailPayload): Promise<ApiResponse> => { 
+  const { email, otpCode } = payload
+  try {
+    // Check email
+    const existingUser = await User.findOne({ email })
+    if (!existingUser) {
+      throw new ApiError(StatusCodes.NOT_FOUND, 'Account does not exists')
+    }
+
+    // Check OTP Code
+    const isOTPCodeCorrect = otpCode === existingUser.otpCode
+    if (!isOTPCodeCorrect) {
+      throw new ApiError(StatusCodes.BAD_REQUEST, 'Invalid OTP code')
+    }
+
+    // Check OTP code time expires (now < time expires)
+    const now = Date.now()
+    if (now > Number(existingUser.otpExpiresIn)) {
+      throw new ApiError(StatusCodes.BAD_REQUEST, 'OTP code is expired')
+    }
+
+    existingUser.isActive = true
+    existingUser.otpCode = null
+    existingUser.otpExpiresIn = null
+    await existingUser.save()
+
+    // Send email
+    await sendMail({
+      email: existingUser.email,
+      subject: 'Account Activated Successfully',
+      fullName: existingUser.fullName,
+      templateURL: '../views/email/activation-email-success.ejs'
+    })
+
+    return { statusCode: StatusCodes.OK, message: 'Your email address is actived' }
+  } catch (error) {
+    throw error
+  }  
+}
+
 const getProfile = async (userId: string): Promise<ApiResponse<GetProfileResponse>> => {
   try {
     const profile = await User.findById(userId).select('-password -refreshToken')
@@ -130,6 +170,7 @@ const getProfile = async (userId: string): Promise<ApiResponse<GetProfileRespons
 const authService = {
   register,
   login,
+  verifyEmail,
   getProfile
 }
 

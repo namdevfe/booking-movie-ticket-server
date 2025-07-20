@@ -11,8 +11,8 @@ const userSchema = new Schema({
   isActive: { type: Boolean, default: false },
   role: { type: String },
   refreshToken: { type: String, default: null },
-  otpCode: { type: String, default: null },
-  otpExpiresIn: { type: Number, default: null }
+  otpCode: { type: String, required: false, default: null },
+  otpExpiresIn: { type: Number, required: false, default: null }
 })
 
 userSchema.pre('save', async function(next) {
