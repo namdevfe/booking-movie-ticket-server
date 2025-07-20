@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt'
 import { StatusCodes } from 'http-status-codes'
 import User from '~/models/userModel'
 import { ApiResponse } from '~/types/api'
-import { LoginPayload, LoginResponse, VerifyEmailPayload } from '~/types/authType'
+import { LoginPayload, LoginResponse, ResendOTPPayload, VerifyEmailPayload } from '~/types/authType'
 import { CreateUserPayload, GetProfileResponse } from '~/types/userType'
 import ApiError from '~/utils/ApiError'
 import { generateAccessToken, generateRefreshToken } from '~/utils/jwt'
@@ -113,7 +113,12 @@ const verifyEmail = async (payload: VerifyEmailPayload): Promise<ApiResponse> =>
     // Check email
     const existingUser = await User.findOne({ email })
     if (!existingUser) {
-      throw new ApiError(StatusCodes.NOT_FOUND, 'Account does not exists')
+      throw new ApiError(StatusCodes.NOT_FOUND, 'Email does not exists')
+    }
+
+    const isActive = existingUser.isActive
+    if (isActive) {
+      throw new ApiError(StatusCodes.BAD_REQUEST, 'Account already verified')
     }
 
     // Check OTP Code
@@ -147,6 +152,45 @@ const verifyEmail = async (payload: VerifyEmailPayload): Promise<ApiResponse> =>
   }  
 }
 
+const resendOTP = async (payload: ResendOTPPayload): Promise<ApiResponse> => {
+  const { email } = payload
+
+  try {
+    const existingUser = await User.findOne({ email })
+    if (!existingUser) {
+      throw new ApiError(StatusCodes.NOT_FOUND, 'Email does not exists')
+    }
+
+    const isActive = existingUser.isActive
+    if (isActive) {
+      throw new ApiError(StatusCodes.BAD_REQUEST, 'Account already verified')
+    }
+
+    // Generate OTP Code
+    const otpCode = generateOTP(6)
+    const otpExpiresIn = Date.now() + (5 * 60 * 1000)
+    existingUser.otpCode = otpCode
+    existingUser.otpExpiresIn = otpExpiresIn
+    await existingUser.save()
+
+    // Send email
+    await sendMail({ 
+      email: existingUser.email, 
+      subject: 'Welcome to Booking Movie Ticket System! Activate Your Account', 
+      otpCode: existingUser.otpCode,
+      fullName: existingUser.fullName,
+      templateURL: '../views/email/activation-email.ejs' 
+    })
+
+    return { 
+      statusCode: StatusCodes.CREATED, 
+      message: 'Resend OTP Code your email address is successfully'
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
 const getProfile = async (userId: string): Promise<ApiResponse<GetProfileResponse>> => {
   try {
     const profile = await User.findById(userId).select('-password -refreshToken')
@@ -171,6 +215,7 @@ const authService = {
   register,
   login,
   verifyEmail,
+  resendOTP,
   getProfile
 }
 

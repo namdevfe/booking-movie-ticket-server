@@ -15,6 +15,9 @@ Router.route('/login')
 Router.route('/verify-email')
   .put(authValidation.verifyEmail, authController.verifyEmail)
 
+Router.route('/resend-otp')
+  .put(authValidation.resendOTP, authController.resendOTP)
+
 Router.route('/profile')
   .get(authController.getProfile)
 
