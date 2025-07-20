@@ -29,6 +29,15 @@ const verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
   }
 }
 
+const resendOTP = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const response = await authService.resendOTP(req.body)
+    res.status(response.statusCode).json(response)
+  } catch (error) {
+    next(error)
+  }
+}
+
 const getProfile = async (req: AuthRequest, res: Response, next: NextFunction) => {
   const userId = req.user?.userId
   try {
@@ -43,6 +52,7 @@ const authController = {
   register,
   login,
   verifyEmail,
+  resendOTP,
   getProfile
 }
 
