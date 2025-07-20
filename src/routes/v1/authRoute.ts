@@ -12,6 +12,9 @@ Router.route('/register')
 Router.route('/login')
   .post(authValidation.login, authController.login)
 
+Router.route('/verify-email')
+  .put(authValidation.verifyEmail, authController.verifyEmail)
+
 Router.route('/profile')
   .get(authController.getProfile)
 

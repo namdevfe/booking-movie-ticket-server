@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express"
-import { loginSchema } from "~/schemaValidations/authSchemaValidation"
+import { loginSchema, verifyEmailSchema } from "~/schemaValidations/authSchemaValidation"
 
-const login = async (req: Request, res: Response, next: NextFunction) => {
+const login = async (req: Request, _: Response, next: NextFunction) => {
   try {
     await loginSchema.validateAsync(req.body, { abortEarly: false })
     next()
@@ -10,8 +10,18 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
   }
 }
 
+const verifyEmail = async (req: Request, _: Response, next: NextFunction) => {
+  try {
+    await verifyEmailSchema.validateAsync(req.body, { abortEarly: false })
+    next()
+  } catch (error) {
+    next(error)
+  }
+}
+
 const authValidation = {
-  login
+  login,
+  verifyEmail
 }
 
 export default authValidation
