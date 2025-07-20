@@ -10,7 +10,9 @@ export interface User {
   phoneNumber?: string | null,
   role?: string | null
   refreshToken?: string | null 
-  isActive?: boolean
+  isActive?: boolean,
+  otpCode?: string | null,
+  otpExpiresIn?: number | null
 }
 
 export type CreateUserPayload = Omit<User, '_id' | 'role' | 'refreshToken'>

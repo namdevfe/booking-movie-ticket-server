@@ -1,6 +1,15 @@
-import { NextFunction, Request, Response } from "express"
-import authService from "~/services/authService"
-import { AuthRequest } from "~/types/common"
+import { NextFunction, Request, Response } from 'express'
+import authService from '~/services/authService'
+import { AuthRequest } from '~/types/common'
+
+const register = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const response = await authService.register(req.body)
+    res.status(response.statusCode).json(response)
+  } catch (error) {
+    next(error)
+  }
+}
 
 const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -22,6 +31,7 @@ const getProfile = async (req: AuthRequest, res: Response, next: NextFunction) =
 }
 
 const authController = {
+  register,
   login,
   getProfile
 }

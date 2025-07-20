@@ -1,20 +1,23 @@
-import nodemailer, { TransportOptions } from 'nodemailer'
+import ejs from 'ejs'
 import { OAuth2Client } from 'google-auth-library'
-import { ENV } from '~/config/environment'
-import SMTPPool from 'nodemailer/lib/smtp-pool'
-import { ApiResponse } from '~/types/api'
 import { StatusCodes } from 'http-status-codes'
+import nodemailer, { TransportOptions } from 'nodemailer'
+import path from 'path'
+import { ENV } from '~/config/environment'
+import { ApiResponse } from '~/types/api'
 
 interface SendMailProvider {
+  templateURL: string
   email: string
   subject: string
-  content: string
+  [key: string]: any
 }
 
-export const sendMail = async ({ email, subject, content }: SendMailProvider): Promise<ApiResponse> => { 
-  
 
+export const sendMail = async ({ templateURL, ...data }: SendMailProvider): Promise<ApiResponse> => {
   try {
+    const templatePath = path.resolve(__dirname, templateURL)
+
     // Khởi tạo OAuth2Client với Client ID và Client Secret 
     const oAuth2ClientInstance = new OAuth2Client(
       ENV.GOOGLE_OAUTH2_CLIENT_ID,
@@ -45,13 +48,15 @@ export const sendMail = async ({ email, subject, content }: SendMailProvider): P
           accessToken: accessToken
         }
       } as TransportOptions) 
-      // mailOption là những thông tin gửi từ phía client lên thông qua API
+
+      const html = await ejs.renderFile(templatePath, data)
+
       const mailOptions = {
-        to: email, // Gửi đến ai?
-        subject: subject, // Tiêu đề email
-        html: `${content}` // Nội dung email
+        to: data.email,
+        subject: data.subject,
+        html
       }
-      // Gọi hành động gửi email
+
       await transport.sendMail(mailOptions)
 
       return { statusCode: StatusCodes.OK, message: 'Email sent successfully.' }
