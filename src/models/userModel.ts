@@ -10,7 +10,9 @@ const userSchema = new Schema({
   password: { type: String },
   isActive: { type: Boolean, default: false },
   role: { type: String },
-  refreshToken: { type: String, default: null }
+  refreshToken: { type: String, default: null },
+  otpCode: { type: String, default: null },
+  otpExpiresIn: { type: Number, default: null }
 })
 
 userSchema.pre('save', async function(next) {

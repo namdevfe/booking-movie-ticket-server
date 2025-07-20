@@ -3,9 +3,62 @@ import { StatusCodes } from 'http-status-codes'
 import User from '~/models/userModel'
 import { ApiResponse } from '~/types/api'
 import { LoginPayload, LoginResponse } from '~/types/authType'
-import { GetProfileResponse } from '~/types/userType'
+import { CreateUserPayload, GetProfileResponse } from '~/types/userType'
 import ApiError from '~/utils/ApiError'
 import { generateAccessToken, generateRefreshToken } from '~/utils/jwt'
+import { User as UserType } from '~/types/userType'
+import { sendMail } from '~/providers/sendMailProvider'
+import { generateOTP } from '~/utils/generateOTP'
+
+const register = async (payload: CreateUserPayload): Promise<ApiResponse<UserType>> => {
+  const { email, username, phoneNumber } = payload
+  
+  try {
+    // Check email
+    const existingUser = await User.findOne({
+      $or: [
+        { email },
+        { username },
+        { phoneNumber }
+      ]
+    })
+
+    if (existingUser) {
+      throw new ApiError(StatusCodes.CONFLICT, 'Email, username or phoneNumber has already exists')
+    }
+
+    const createdUser = new User(payload)
+    await createdUser.save()
+
+    // Generate OTP Code & save to database
+    const otpCode = generateOTP(6)
+    createdUser.otpCode = otpCode
+
+    // OTP code will expire in 5 minutes
+    const otpExpiresIn = Date.now() + (5 * 60 * 1000)
+    createdUser.otpExpiresIn = otpExpiresIn
+    await createdUser.save()
+
+    // Send email
+    await sendMail({ 
+      email: createdUser.email, 
+      subject: 'Welcome to Booking Movie Ticket System! Activate Your Account', 
+      otpCode: createdUser.otpCode,
+      fullName: createdUser.fullName,
+      templateURL: '../views/email/activation-email.ejs' 
+    })
+
+    const { password: excludePassword, otpCode: excludeOTPCode, otpExpiresIn: excludeOTPExpiresIn, ...userResponse } = createdUser.toObject()
+
+    return createdUser._id && { 
+      statusCode: StatusCodes.CREATED, 
+      message: 'Register account is successfully. OTP Code sent to your email address, please check your email', 
+      data: userResponse 
+    }
+  } catch (error) {
+    throw error
+  }
+}
 
 const login = async (payload: LoginPayload): Promise<ApiResponse<LoginResponse>> => {
   try {
@@ -27,6 +80,12 @@ const login = async (payload: LoginPayload): Promise<ApiResponse<LoginResponse>>
     const isCorrectPassword = await bcrypt.compare(password as string, existingUser.password as string)
     if (!isCorrectPassword) { 
       throw new ApiError(StatusCodes.UNAUTHORIZED, 'Password incorrect')
+    }
+
+    // Check account is actived
+    const isActive = existingUser.isActive
+    if (!isActive) {
+      throw new ApiError(StatusCodes.BAD_REQUEST, 'Account not activated. Please check your email for the OTP code.')
     }
 
     // Create access token and refresh token
@@ -56,10 +115,12 @@ const getProfile = async (userId: string): Promise<ApiResponse<GetProfileRespons
       throw new ApiError(StatusCodes.NOT_FOUND, 'Profile not found')
     }
 
+    const { password: excludePassword, otpCode: excludeOTPCode, otpExpiresIn: excludeOTPExpiresIn, ...userResponse } = profile.toObject()
+
     return {
       statusCode: StatusCodes.OK,
       message: 'Get profile is successfully',
-      data: profile
+      data: userResponse
     }
   } catch (error) {
     throw error
@@ -67,6 +128,7 @@ const getProfile = async (userId: string): Promise<ApiResponse<GetProfileRespons
 }
 
 const authService = {
+  register,
   login,
   getProfile
 }

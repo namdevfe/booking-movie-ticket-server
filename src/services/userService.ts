@@ -4,6 +4,7 @@ import { sendMail } from "~/providers/sendMailProvider";
 import { ApiResponse } from "~/types/api";
 import { CreateUserPayload, UpdateUserPayload, User as UserType } from "~/types/userType";
 import ApiError from "~/utils/ApiError";
+import { generateOTP } from "~/utils/generateOTP";
 
 const createUser = async (payload: CreateUserPayload): Promise<ApiResponse<UserType>> => {
   const { email, username, phoneNumber } = payload
@@ -25,10 +26,25 @@ const createUser = async (payload: CreateUserPayload): Promise<ApiResponse<UserT
     const createdUser = new User(payload)
     await createdUser.save()
 
-    // Send email
-    await sendMail({ email: createdUser.email, subject: 'Welcome to Booking Movie Ticket System', content: 'Welcome' })
+    // Generate OTP Code
+    const otpCode = generateOTP(6)
+    createdUser.otpCode = otpCode
 
-    const { password: excludePassword, ...userResponse } = createdUser.toObject()
+    // OTP code will expire in 5 minutes
+    const otpExpiresIn = Date.now() + (5 * 60 * 1000)
+    createdUser.otpExpiresIn = otpExpiresIn
+    await createdUser.save()
+
+    // Send email
+    await sendMail({ 
+      email: createdUser.email, 
+      subject: 'Welcome to Booking Movie Ticket System! Activate Your Account', 
+      otpCode: createdUser.otpCode,
+      fullName: createdUser.fullName,
+      templateURL: '../views/email/activation-email.ejs' 
+    })
+
+    const { password: excludePassword, otpCode: excludeOTPCode, otpExpiresIn: excludeOTPExpiresIn, ...userResponse } = createdUser.toObject()
 
     return createdUser._id && { statusCode: StatusCodes.CREATED, message: 'Created new user is successfully', data: userResponse }
   } catch (error) {

@@ -7,7 +7,7 @@ import userValidation from '~/validations/userValidation'
 const Router = express.Router()
 
 Router.route('/register')
-  .post(userValidation.createUser, userController.createUser)
+  .post(userValidation.createUser, authController.register)
 
 Router.route('/login')
   .post(authValidation.login, authController.login)
