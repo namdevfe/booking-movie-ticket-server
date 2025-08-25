@@ -4,9 +4,12 @@ import connectDB from '~/config/database'
 import { APIs_V1 } from '~/routes/v1'
 import { errorHandlingMiddleware } from '~/middlewares/errorHandlingMiddleware'
 import authenticateMiddleware from '~/middlewares/authenticateMiddleware'
+import cors from 'cors'
 
 const START_SERVER = async () => {
   const app = express()
+
+  app.use(cors())
 
   app.use(express.json())
 

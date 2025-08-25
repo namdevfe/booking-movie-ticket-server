@@ -12,7 +12,7 @@ export default defineConfig([
   { files: ['**/*.{js,mjs,cjs,ts,mts,cts}'], languageOptions: { globals: globals.node }, rules: {
     'no-console': 1,
     'no-lonely-if': 1,
-    'no-unused-vars': 1,
+    'no-unused-vars': 'off',
     'no-trailing-spaces': 1,
     'no-multi-spaces': 1,
     'no-multiple-empty-lines': 1,
@@ -28,7 +28,17 @@ export default defineConfig([
     'comma-dangle': 1,
     'comma-spacing': 1,
     'arrow-spacing': 1,
-    '@typescript-eslint/no-explicit-any': '0'
+    '@typescript-eslint/no-explicit-any': '0',
+    '@typescript-eslint/no-unused-vars': ['error', {
+        "args": "all",
+        "argsIgnorePattern": "^_",
+        "caughtErrors": "all",
+        "caughtErrorsIgnorePattern": "^_",
+        "destructuredArrayIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "ignoreRestSiblings": true      
+      }
+    ],
   } },
   tseslint.configs.recommended,
   { files: ['**/*.json'], plugins: { json }, language: 'json/json', extends: ['json/recommended'] },
