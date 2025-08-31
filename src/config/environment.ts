@@ -4,6 +4,7 @@ import type { StringValue } from 'ms'
 export const ENV = {
   APP_HOST: process.env.APP_HOST as string,
   APP_PORT: Number(process.env.APP_PORT),
+  CLIENT_URL: process.env.CLIENT_URL,
   MONGODB_URI: process.env.MONGODB_URI,
   GOOGLE_OAUTH2_CLIENT_ID: process.env.GOOGLE_OAUTH2_CLIENT_ID,
   GOOGLE_OAUTH2_CLIENT_SECRET: process.env.GOOGLE_OAUTH2_CLIENT_SECRET,

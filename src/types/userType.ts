@@ -13,6 +13,8 @@ export interface User {
   isActive?: boolean,
   otpCode?: string | null,
   otpExpiresIn?: number | null
+  resetPasswordToken?: string | null,
+  resetPasswordExpiresIn?: number | null
 }
 
 export type CreateUserPayload = Omit<User, '_id' | 'role' | 'refreshToken'>

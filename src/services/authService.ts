@@ -2,13 +2,14 @@ import bcrypt from 'bcrypt'
 import { StatusCodes } from 'http-status-codes'
 import User from '~/models/userModel'
 import { ApiResponse } from '~/types/api'
-import { LoginPayload, LoginResponse, ResendOTPPayload, VerifyEmailPayload } from '~/types/authType'
+import { ForgotPasswordPayload, LoginPayload, LoginResponse, ResendOTPPayload, VerifyEmailPayload } from '~/types/authType'
 import { CreateUserPayload, GetProfileResponse } from '~/types/userType'
 import ApiError from '~/utils/ApiError'
 import { generateAccessToken, generateRefreshToken } from '~/utils/jwt'
 import { User as UserType } from '~/types/userType'
 import { sendMail } from '~/providers/sendMailProvider'
 import { generateOTP } from '~/utils/generateOTP'
+import { ENV } from '~/config/environment'
 
 const register = async (payload: CreateUserPayload): Promise<ApiResponse<UserType>> => {
   const { email, username, phoneNumber } = payload
@@ -191,6 +192,39 @@ const resendOTP = async (payload: ResendOTPPayload): Promise<ApiResponse> => {
   }
 }
 
+const forgotPassword = async (payload: ForgotPasswordPayload): Promise<ApiResponse | undefined> => {
+  const { email } = payload
+  try {
+    const existingUser = await User.findOne({ email })
+    if (!existingUser) {
+      throw new ApiError(StatusCodes.NOT_FOUND, 'Email does not exists')
+    }
+    
+    // Generate resetPassword token
+    const resetPasswordToken = existingUser.createResetPasswordToken()
+
+    // Generate reset link
+    const resetLink = `${ENV.CLIENT_URL}/reset-password/${resetPasswordToken}`
+
+    // Send mail
+    await sendMail({ 
+      email: existingUser.email, 
+      subject: 'Password Reset Request – Booking Movie Ticket System', 
+      resetToken: resetPasswordToken,
+      resetLink: resetLink,
+      fullName: existingUser.fullName,
+      templateURL: '../views/email/reset-password.ejs' 
+    })
+
+    return {
+      statusCode: StatusCodes.OK,
+      message: 'Reset password link is sent to your email'
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
 const getProfile = async (userId: string): Promise<ApiResponse<GetProfileResponse>> => {
   try {
     const profile = await User.findById(userId).select('-password -refreshToken')
@@ -216,6 +250,7 @@ const authService = {
   login,
   verifyEmail,
   resendOTP,
+  forgotPassword,
   getProfile
 }
 
