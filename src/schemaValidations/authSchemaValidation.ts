@@ -1,5 +1,5 @@
 import Joi from 'joi'
-import { LoginPayload, ResendOTPPayload, VerifyEmailPayload } from '~/types/authType'
+import { ForgotPasswordPayload, LoginPayload, ResendOTPPayload, VerifyEmailPayload } from '~/types/authType'
 
 export const loginSchema = Joi.object<LoginPayload>({
   email: Joi.string().email({ minDomainSegments: 1, tlds: { allow: ['com'] } }).max(256).trim().strict()
@@ -41,6 +41,24 @@ export const verifyEmailSchema = Joi.object<VerifyEmailPayload>({
 })
 
 export const resendOTPSchema = Joi.object<ResendOTPPayload>({
+  email: Joi
+    .string()
+    .required()
+    .email({ minDomainSegments: 1, tlds: { allow: ['com'] } })
+    .max(256)
+    .trim()
+    .strict()
+    .messages({
+      'string.base': 'Email must be a string',
+      'string.empty': 'Email cannot be empty',
+      'string.trim': 'Email must not have leading or trailing whitespace',
+      'string.email': 'Email must be a valid email',
+      'string.max': 'Email length must be less than or equal to 256 characters long',
+      'any.required': 'Email is required'
+  })
+})
+
+export const forgotPasswordSchema = Joi.object<ForgotPasswordPayload>({
   email: Joi
     .string()
     .required()

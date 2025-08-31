@@ -12,7 +12,6 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
 
 const updateUserById = async (req: Request, res: Response, next: NextFunction) => {
   const { userId } = req.params
-
   try {
     const response = await userService.updateUserById(userId, req.body)
     res.status(response.statusCode).json(response)

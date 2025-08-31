@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express"
-import { loginSchema, resendOTPSchema, verifyEmailSchema } from "~/schemaValidations/authSchemaValidation"
+import { forgotPasswordSchema, loginSchema, resendOTPSchema, verifyEmailSchema } from "~/schemaValidations/authSchemaValidation"
 
 const login = async (req: Request, _: Response, next: NextFunction) => {
   try {
@@ -28,10 +28,20 @@ const resendOTP = async (req: Request, _: Response, next: NextFunction) => {
   }
 }
 
+const forgotPassword = async (req: Request, _: Response, next: NextFunction) => {
+  try {
+    await forgotPasswordSchema.validateAsync(req.body, { abortEarly: false })
+    next()
+  } catch (error) {
+    next(error)
+  }
+}
+
 const authValidation = {
   login,
   verifyEmail,
-  resendOTP
+  resendOTP,
+  forgotPassword
 }
 
 export default authValidation

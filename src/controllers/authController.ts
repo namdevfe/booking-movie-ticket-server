@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
+import { StatusCodes } from 'http-status-codes'
 import authService from '~/services/authService'
 import { AuthRequest } from '~/types/common'
 
@@ -38,6 +39,15 @@ const resendOTP = async (req: Request, res: Response, next: NextFunction) => {
   }
 }
 
+const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const response = await authService.forgotPassword(req.body)
+    res.status(response?.statusCode || StatusCodes.OK).json(response)
+  } catch (error) {
+    next(error)
+  }
+}
+
 const getProfile = async (req: AuthRequest, res: Response, next: NextFunction) => {
   const userId = req.user?.userId
   try {
@@ -53,6 +63,7 @@ const authController = {
   login,
   verifyEmail,
   resendOTP,
+  forgotPassword,
   getProfile
 }
 

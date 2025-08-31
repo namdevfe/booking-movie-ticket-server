@@ -18,7 +18,11 @@ Router.route('/verify-email')
 Router.route('/resend-otp')
   .put(authValidation.resendOTP, authController.resendOTP)
 
+Router.route('/forgot-password')
+  .put(authValidation.forgotPassword, authController.forgotPassword)
+
 Router.route('/profile')
   .get(authController.getProfile)
+
 
 export const authRoutes = Router
