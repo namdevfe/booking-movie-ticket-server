@@ -5,3 +5,4 @@ export type LoginResponse = { accessToken: string, refreshToken: string }
 export type VerifyEmailPayload = Pick<User, 'email' | 'otpCode'>
 export type ResendOTPPayload = Pick<User, 'email'>
 export type ForgotPasswordPayload = Pick<User, 'email'>
+export type ResetPasswordPayload = Pick<User, 'email' | 'password' | 'resetPasswordToken'>

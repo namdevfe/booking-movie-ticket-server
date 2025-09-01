@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt'
 import { StatusCodes } from 'http-status-codes'
 import User from '~/models/userModel'
 import { ApiResponse } from '~/types/api'
-import { ForgotPasswordPayload, LoginPayload, LoginResponse, ResendOTPPayload, VerifyEmailPayload } from '~/types/authType'
+import { ForgotPasswordPayload, LoginPayload, LoginResponse, ResendOTPPayload, ResetPasswordPayload, VerifyEmailPayload } from '~/types/authType'
 import { CreateUserPayload, GetProfileResponse } from '~/types/userType'
 import ApiError from '~/utils/ApiError'
 import { generateAccessToken, generateRefreshToken } from '~/utils/jwt'
@@ -201,16 +201,17 @@ const forgotPassword = async (payload: ForgotPasswordPayload): Promise<ApiRespon
     }
     
     // Generate resetPassword token
-    const resetPasswordToken = existingUser.createResetPasswordToken()
+    existingUser.createResetPasswordToken()
+    await existingUser.save()
 
     // Generate reset link
-    const resetLink = `${ENV.CLIENT_URL}/reset-password/${resetPasswordToken}`
+    const resetLink = `${ENV.CLIENT_URL}/auth?email=${encodeURIComponent(existingUser.email)}&resetPasswordToken=${encodeURIComponent(existingUser.resetPasswordToken as string)}`
 
     // Send mail
     await sendMail({ 
       email: existingUser.email, 
       subject: 'Password Reset Request – Booking Movie Ticket System', 
-      resetToken: resetPasswordToken,
+      resetToken: existingUser.resetPasswordToken,
       resetLink: resetLink,
       fullName: existingUser.fullName,
       templateURL: '../views/email/reset-password.ejs' 
@@ -219,6 +220,32 @@ const forgotPassword = async (payload: ForgotPasswordPayload): Promise<ApiRespon
     return {
       statusCode: StatusCodes.OK,
       message: 'Reset password link is sent to your email'
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
+const resetPassword = async (payload: ResetPasswordPayload): Promise<ApiResponse | undefined> => {
+  const { email, resetPasswordToken } = payload
+  try {
+    const existingUser = await User.findOne({ email, resetPasswordToken })
+    if (!existingUser) {
+      throw new ApiError(StatusCodes.BAD_REQUEST, 'Invalid reset password token')
+    }
+
+    if (Date.now() > Number(existingUser.resetPasswordExpiresIn)) {
+      throw new ApiError(StatusCodes.BAD_REQUEST, 'Reset password token is expired')
+    }
+
+    existingUser.password = payload.password
+    existingUser.resetPasswordToken = null
+    existingUser.resetPasswordExpiresIn = null
+    await existingUser.save()
+
+    return {
+      statusCode: StatusCodes.OK,
+      message: 'Reset password is successfully'
     }
   } catch (error) {
     throw error
@@ -251,6 +278,7 @@ const authService = {
   verifyEmail,
   resendOTP,
   forgotPassword,
+  resetPassword,
   getProfile
 }
 

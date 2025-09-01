@@ -48,6 +48,15 @@ const forgotPassword = async (req: Request, res: Response, next: NextFunction) =
   }
 }
 
+const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const response = await authService.resetPassword(req.body)
+    res.status(response?.statusCode || StatusCodes.OK).json(response)
+  } catch (error) {
+    next(error)
+  }
+}
+
 const getProfile = async (req: AuthRequest, res: Response, next: NextFunction) => {
   const userId = req.user?.userId
   try {
@@ -64,6 +73,7 @@ const authController = {
   verifyEmail,
   resendOTP,
   forgotPassword,
+  resetPassword,
   getProfile
 }
 

@@ -21,6 +21,9 @@ Router.route('/resend-otp')
 Router.route('/forgot-password')
   .put(authValidation.forgotPassword, authController.forgotPassword)
 
+Router.route('/reset-password')
+  .put(authValidation.resetPassword, authController.resetPassword)
+
 Router.route('/profile')
   .get(authController.getProfile)
 
