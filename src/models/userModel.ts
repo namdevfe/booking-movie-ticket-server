@@ -1,13 +1,16 @@
-import { model, Schema } from 'mongoose'
+import mongoose, { model, Schema } from 'mongoose'
 import bcrypt from 'bcrypt'
 import crypto from 'crypto'
 import { User } from '~/types/userType'
+import { ROLE_COLLECTION_NAME } from '~/models/roleModel'
 
 type UserMethods = {
   createResetPasswordToken: () => string
 }
 
 type UserDocument = User & Document & UserMethods
+
+export const USER_COLLECTION_NAME = 'User'
 
 const userSchema = new Schema<UserDocument>({
   email: { type: String, required: true, unique: true },
@@ -17,7 +20,7 @@ const userSchema = new Schema<UserDocument>({
   dateOfBirth: { type: Date },
   password: { type: String },
   isActive: { type: Boolean, default: false },
-  role: { type: String },
+  roles: [{ type: mongoose.Types.ObjectId, ref: ROLE_COLLECTION_NAME }],
   refreshToken: { type: String, default: null },
   otpCode: { type: String, required: false, default: null },
   otpExpiresIn: { type: Number, required: false, default: null },
@@ -44,6 +47,6 @@ userSchema.methods = {
   }
 }
 
-const User = model('User', userSchema)
+const User = model(USER_COLLECTION_NAME, userSchema)
 
 export default User
