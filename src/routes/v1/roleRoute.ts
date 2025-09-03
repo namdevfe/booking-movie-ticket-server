@@ -7,6 +7,7 @@ const Router = express.Router()
 
 Router.route('/').post(validateBodyMiddleware(createRoleSchema), roleController.createRole)
 Router.route('/:id')
+  .get(roleController.getRoleDetails)
   .put(validateBodyMiddleware(updateRoleSchema), roleController.updateRole)
   .delete(roleController.deleteRole)
 

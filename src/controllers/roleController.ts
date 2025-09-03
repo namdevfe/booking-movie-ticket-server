@@ -31,11 +31,22 @@ const deleteRole = async (req: Request, res: Response, next: NextFunction) => {
   }
 }
 
+const getRoleDetails = async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.params
+  try {
+    const response = await roleService.getRoleDetails(id)
+    res.status(response.statusCode).json(response)
+  } catch (error) {
+    next(error)
+  }
+}
+
 // Export Controller
 const roleController = {
   createRole,
   updateRole,
-  deleteRole
+  deleteRole,
+  getRoleDetails
 }
 
 export default roleController
