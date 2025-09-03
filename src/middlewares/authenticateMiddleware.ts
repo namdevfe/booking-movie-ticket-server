@@ -27,7 +27,7 @@ const authenticateMiddleware = (req: AuthRequest, res: Response, next: NextFunct
     req.user = <{ userId: string }>decode
     next()
   } catch (error) {
-     if (error instanceof TokenExpiredError) {
+    if (error instanceof TokenExpiredError) {
       next(new ApiError(StatusCodes.UNAUTHORIZED, 'Token is expired.'))
     } else {
       next(new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid token.'))

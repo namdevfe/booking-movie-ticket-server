@@ -1,5 +1,4 @@
 import { model, Schema } from 'mongoose'
-import { PERMISSION_COLLECTION_NAME } from '~/models/permissionModel'
 import type { Role } from '~/types/roleType'
 
 // Types Defination
@@ -13,7 +12,7 @@ const roleSchema = new Schema<RoleDocument>(
   {
     name: { type: String, required: true },
     description: { type: String },
-    permissions: [{ type: Schema.ObjectId, ref: PERMISSION_COLLECTION_NAME }],
+    permissions: [{ type: String }],
     isDefault: { type: Boolean, default: false }
   },
   { timestamps: true }
