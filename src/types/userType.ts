@@ -8,7 +8,7 @@ export interface User {
   fullName: string,
   dateOfBirth?: NativeDate | Date | string | null,
   phoneNumber?: string | null,
-  role?: string | null
+  roles?: mongoose.Types.ObjectId
   refreshToken?: string | null 
   isActive?: boolean,
   otpCode?: string | null,
