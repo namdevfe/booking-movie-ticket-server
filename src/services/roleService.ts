@@ -79,6 +79,31 @@ const deleteRole = async (id: string): Promise<ApiResponse | undefined> => {
   }
 }
 
-const roleService = { createRole, updateRole, deleteRole }
+const getRoleDetails = async (id: string): Promise<ApiResponse> => {
+  try {
+    // Check roleId valid
+    const isValidRoleId = mongoose.isValidObjectId(id)
+    if (!isValidRoleId) {
+      throw new ApiError(StatusCodes.BAD_REQUEST, 'Role id invalid!')
+    }
+
+    // Get role details
+    const roleDetails = await Role.findById(id)
+    if (!roleDetails) {
+      throw new ApiError(StatusCodes.NOT_FOUND, 'Role not found!')
+    }
+
+    // Return response
+    return {
+      statusCode: StatusCodes.OK,
+      message: 'Get role details is successfully',
+      data: roleDetails
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
+const roleService = { createRole, updateRole, deleteRole, getRoleDetails }
 
 export default roleService
