@@ -59,6 +59,26 @@ const updateRole = async (id: string, reqBody: UpdateRolePayload): Promise<ApiRe
   }
 }
 
-const roleService = { createRole, updateRole }
+const deleteRole = async (id: string): Promise<ApiResponse | undefined> => {
+  try {
+    const existingRole = await Role.findById(id)
+    if (!existingRole) {
+      throw new ApiError(StatusCodes.NOT_FOUND, 'Role not found!')
+    }
+
+    const deletedRole = await Role.findByIdAndDelete(id)
+    if (deletedRole?._id) {
+      return {
+        statusCode: StatusCodes.OK,
+        message: 'Deleted role is successfully',
+        data: deletedRole
+      }
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
+const roleService = { createRole, updateRole, deleteRole }
 
 export default roleService
