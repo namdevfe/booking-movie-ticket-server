@@ -4,7 +4,7 @@ export interface Role {
   _id: mongoose.Types.ObjectId
   name: string
   description?: string
-  permissions: mongoose.Types.ObjectId[]
+  permissions: string[]
   isDefault?: boolean
 }
 
