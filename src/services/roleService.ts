@@ -104,6 +104,19 @@ const getRoleDetails = async (id: string): Promise<ApiResponse> => {
   }
 }
 
-const roleService = { createRole, updateRole, deleteRole, getRoleDetails }
+const getRoles = async (): Promise<ApiResponse> => {
+  try {
+    const roles = await Role.find()
+    return {
+      statusCode: StatusCodes.OK,
+      message: 'Get roles are successfully',
+      data: roles
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
+const roleService = { createRole, updateRole, deleteRole, getRoleDetails, getRoles }
 
 export default roleService
