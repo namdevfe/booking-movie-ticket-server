@@ -5,7 +5,10 @@ import { createRoleSchema, updateRoleSchema } from '~/schemaValidations/roleSche
 
 const Router = express.Router()
 
-Router.route('/').post(validateBodyMiddleware(createRoleSchema), roleController.createRole)
+Router.route('/')
+  .post(validateBodyMiddleware(createRoleSchema), roleController.createRole)
+  .get(roleController.getRoles)
+
 Router.route('/:id')
   .get(roleController.getRoleDetails)
   .put(validateBodyMiddleware(updateRoleSchema), roleController.updateRole)

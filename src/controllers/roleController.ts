@@ -41,12 +41,22 @@ const getRoleDetails = async (req: Request, res: Response, next: NextFunction) =
   }
 }
 
+const getRoles = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const response = await roleService.getRoles()
+    res.status(response.statusCode).json(response)
+  } catch (error) {
+    next(error)
+  }
+}
+
 // Export Controller
 const roleController = {
   createRole,
   updateRole,
   deleteRole,
-  getRoleDetails
+  getRoleDetails,
+  getRoles
 }
 
 export default roleController
