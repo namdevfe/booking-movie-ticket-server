@@ -9,3 +9,5 @@ export interface Role {
 }
 
 export type CreateRolePayload = Pick<Role, 'name' | 'description' | 'isDefault'>
+
+export type UpdateRolePayload = Omit<Role, '_id'>
