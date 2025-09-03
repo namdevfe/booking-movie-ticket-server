@@ -9,10 +9,15 @@ type RoleDocument = Role & Document
 export const ROLE_COLLECTION_NAME = 'Role'
 
 // Collection Name Defination
-const roleSchema = new Schema<RoleDocument>({
-  name: { type: String, required: true },
-  permissions: [{ type: Schema.ObjectId, ref: PERMISSION_COLLECTION_NAME }]
-}, { timestamps: true })
+const roleSchema = new Schema<RoleDocument>(
+  {
+    name: { type: String, required: true },
+    description: { type: String },
+    permissions: [{ type: Schema.ObjectId, ref: PERMISSION_COLLECTION_NAME }],
+    isDefault: { type: Boolean, default: false }
+  },
+  { timestamps: true }
+)
 
 const Role = model(ROLE_COLLECTION_NAME, roleSchema)
 

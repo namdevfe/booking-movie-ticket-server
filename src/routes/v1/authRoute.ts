@@ -1,31 +1,29 @@
 import express from 'express'
 import authController from '~/controllers/authController'
-import userController from '~/controllers/userController'
-import authValidation from '~/validations/authValidation'
-import userValidation from '~/validations/userValidation'
+import validateBodyMiddleware from '~/middlewares/validateBodyMiddleware'
+import {
+  forgotPasswordSchema,
+  loginSchema,
+  resendOTPSchema,
+  resetPasswordSchema,
+  verifyEmailSchema
+} from '~/schemaValidations/authSchemaValidation'
+import { createUserSchema } from '~/schemaValidations/userSchemaValidation'
 
 const Router = express.Router()
 
-Router.route('/register')
-  .post(userValidation.createUser, authController.register)
+Router.route('/register').post(validateBodyMiddleware(createUserSchema), authController.register)
 
-Router.route('/login')
-  .post(authValidation.login, authController.login)
+Router.route('/login').post(validateBodyMiddleware(loginSchema), authController.login)
 
-Router.route('/verify-email')
-  .put(authValidation.verifyEmail, authController.verifyEmail)
+Router.route('/verify-email').put(validateBodyMiddleware(verifyEmailSchema), authController.verifyEmail)
 
-Router.route('/resend-otp')
-  .put(authValidation.resendOTP, authController.resendOTP)
+Router.route('/resend-otp').put(validateBodyMiddleware(resendOTPSchema), authController.resendOTP)
 
-Router.route('/forgot-password')
-  .put(authValidation.forgotPassword, authController.forgotPassword)
+Router.route('/forgot-password').put(validateBodyMiddleware(forgotPasswordSchema), authController.forgotPassword)
 
-Router.route('/reset-password')
-  .put(authValidation.resetPassword, authController.resetPassword)
+Router.route('/reset-password').put(validateBodyMiddleware(resetPasswordSchema), authController.resetPassword)
 
-Router.route('/profile')
-  .get(authController.getProfile)
-
+Router.route('/profile').get(authController.getProfile)
 
 export const authRoutes = Router
