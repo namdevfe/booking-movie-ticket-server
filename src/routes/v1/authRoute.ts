@@ -16,13 +16,22 @@ Router.route('/register').post(validateBodyMiddleware(createUserSchema), authCon
 
 Router.route('/login').post(validateBodyMiddleware(loginSchema), authController.login)
 
-Router.route('/verify-email').put(validateBodyMiddleware(verifyEmailSchema), authController.verifyEmail)
+Router.route('/verify-email').put(
+  validateBodyMiddleware(verifyEmailSchema),
+  authController.verifyEmail
+)
 
 Router.route('/resend-otp').put(validateBodyMiddleware(resendOTPSchema), authController.resendOTP)
 
-Router.route('/forgot-password').put(validateBodyMiddleware(forgotPasswordSchema), authController.forgotPassword)
+Router.route('/forgot-password').put(
+  validateBodyMiddleware(forgotPasswordSchema),
+  authController.forgotPassword
+)
 
-Router.route('/reset-password').put(validateBodyMiddleware(resetPasswordSchema), authController.resetPassword)
+Router.route('/reset-password').put(
+  validateBodyMiddleware(resetPasswordSchema),
+  authController.resetPassword
+)
 
 Router.route('/profile').get(authController.getProfile)
 
