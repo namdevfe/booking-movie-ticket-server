@@ -279,7 +279,9 @@ const resetPassword = async (payload: ResetPasswordPayload): Promise<ApiResponse
 
 const getProfile = async (userId: string): Promise<ApiResponse<GetProfileResponse>> => {
   try {
-    const profile = await User.findById(userId).select('-password -refreshToken')
+    const excludedFields =
+      '-password -refreshToken -resetPasswordToken -resetPasswordExpiresIn -otpCode -otpExpiresIn'
+    const profile = await User.findById(userId).select(excludedFields).populate('roles')
 
     if (!profile) {
       throw new ApiError(StatusCodes.NOT_FOUND, 'Profile not found')
