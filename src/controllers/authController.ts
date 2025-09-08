@@ -67,6 +67,16 @@ const getProfile = async (req: AuthRequest, res: Response, next: NextFunction) =
   }
 }
 
+const logout = async (req: Request, res: Response, next: NextFunction) => {
+  const { refreshToken } = req.body
+  try {
+    const response = await authService.logout({ refreshToken })
+    res.status(response.statusCode).json(response)
+  } catch (error) {
+    next(error)
+  }
+}
+
 const authController = {
   register,
   login,
@@ -74,7 +84,8 @@ const authController = {
   resendOTP,
   forgotPassword,
   resetPassword,
-  getProfile
+  getProfile,
+  logout
 }
 
 export default authController

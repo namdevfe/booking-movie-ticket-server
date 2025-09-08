@@ -6,6 +6,7 @@ import {
   ForgotPasswordPayload,
   LoginPayload,
   LoginResponse,
+  LogoutPayload,
   ResendOTPPayload,
   ResetPasswordPayload,
   VerifyEmailPayload
@@ -304,6 +305,28 @@ const getProfile = async (userId: string): Promise<ApiResponse<GetProfileRespons
   }
 }
 
+const logout = async ({ refreshToken }: LogoutPayload): Promise<ApiResponse> => {
+  try {
+    // Find user by refresh token
+    const user = await User.findOne({ refreshToken })
+    if (!user) {
+      throw new ApiError(StatusCodes.BAD_REQUEST, 'Token invalid!')
+    }
+
+    // Remove refreshToken
+    user.refreshToken = null
+    await user.save()
+
+    // Response
+    return {
+      statusCode: StatusCodes.OK,
+      message: 'Logout is successfully'
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
 const authService = {
   register,
   login,
@@ -311,7 +334,8 @@ const authService = {
   resendOTP,
   forgotPassword,
   resetPassword,
-  getProfile
+  getProfile,
+  logout
 }
 
 export default authService
