@@ -4,6 +4,7 @@ import validateBodyMiddleware from '~/middlewares/validateBodyMiddleware'
 import {
   forgotPasswordSchema,
   loginSchema,
+  logoutSchema,
   resendOTPSchema,
   resetPasswordSchema,
   verifyEmailSchema
@@ -34,5 +35,7 @@ Router.route('/reset-password').put(
 )
 
 Router.route('/profile').get(authController.getProfile)
+
+Router.route('/logout').put(validateBodyMiddleware(logoutSchema), authController.logout)
 
 export const authRoutes = Router
